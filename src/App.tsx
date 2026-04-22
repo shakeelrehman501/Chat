@@ -1,7 +1,14 @@
 import { Send, User, Bot } from "lucide-react";
 import "./App.css";
 import { useEffect, useRef, useState } from "react";
-import { useChat } from "./context/ChatContext";
+
+interface Message {
+  id: number;
+  text: string;
+  sender: "user" | "other";
+  time: Date;
+}
+
 
 function MessagePopus({
   text,
@@ -43,13 +50,25 @@ function MessagePopus({
 }
 
 function ChatUI() {
-  const { message, sendMsg } = useChat();
+  const [message, setMessage] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState<string>("");
   const autoScroll = useRef<HTMLDivElement>(null);
+
+  function sendMsg(text: string, sender: "user" | "other") {
+    const newMessage = {
+      id: Date.now(),
+      text,
+      sender,
+      time: new Date(),
+    };
+    setMessage((prev) => [...prev, newMessage]);
+  }
 
   const scrolToBottom = () => {
     autoScroll.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+
 
   useEffect(() => {
     scrolToBottom();
@@ -87,7 +106,7 @@ function ChatUI() {
         <div className="max-w-3xl   mx-auto pt-5 px-5">
           <div className="mb-6">
             <h2 className="text-3xl font-bold text-gray-700 mb-2">
-              Real-Time Chat
+              Real-Time Chat UI
             </h2>
             <p className="text-gray-600">
               A modern chat interface with auto-scroll and message bubbles
